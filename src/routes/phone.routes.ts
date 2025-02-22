@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { PhoneController } from '../controllers/phone.controller';
-import { validateSchema } from '../middlewares/validation.middleware';
+import { validateSchema } from '../middlewares/validation.middleware.ts';
 import { phoneSchema } from '../schemas/phone.schema';
 
 const router = Router();
