@@ -1,15 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
+import { Schema } from 'joi';
 
-export const validateSchema = (schema: any) => {
-    return (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const validation = schema.validate(req.body);
-            if (validation.error) {
-                return res.status(400).json({ error: validation.error.message });
-            }
-            next();
-        } catch (error) {
-            return res.status(500).json({ error: "Erro de validação" });
+export const validateSchema = (schema: Schema) => {
+    return (req: Request, res: Response, next: NextFunction): void => {
+        const { error } = schema.validate(req.body, { abortEarly: false });
+
+        if (error) {
+            res.status(400).json({
+                error: 'Erro de validação',
+                details: error.details.map(detail => detail.message),
+            });
+        } else {
+            next(); 
         }
     };
 };
