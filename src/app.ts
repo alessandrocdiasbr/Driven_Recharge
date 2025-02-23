@@ -12,16 +12,25 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
-app.get("/health", (req: express.Request, res: express.Response) => {
-  res.status(200).send();
+app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
 });
 
+app.get('/health', (req: express.Request, res: express.Response) => {
+  res.status(200).send('OK');
+});
 
-app.use(phoneRoutes);
-app.use(rechargeRoutes);
+app.use('/api/phones', phoneRoutes);
+app.use('/api/recharges', rechargeRoutes);
 
-app.use(errorHandler);
+app.use((error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  errorHandler(error, req, res, next);
+});
+
+app.use((req: express.Request, res: express.Response) => {
+  res.status(404).json({ message: 'Rota não encontrada' });
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

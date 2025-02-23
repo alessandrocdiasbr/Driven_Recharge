@@ -6,8 +6,16 @@ import { phoneSchema } from '../schemas/phone.schema';
 const router = Router();
 const controller = new PhoneController();
 
-router.post('/phones', validateSchema(phoneSchema), controller.create.bind(controller));
-router.get('/phones/:document', controller.findByDocument.bind(controller));
-router.get('/summary/:document', controller.getSummary.bind(controller));
+router.post('/phones', validateSchema(phoneSchema), (req, res, next) => {
+  controller.create(req, res, next); 
+});
+
+router.get('/phones/:document', (req, res, next) => {
+  controller.findByDocument(req, res, next); 
+});
+
+router.get('/summary/:document', (req, res, next) => {
+  controller.getSummary(req, res, next); 
+});
 
 export default router;

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { PhoneService } from '../services/phone.service';
 
 export class PhoneController {
@@ -8,30 +8,30 @@ export class PhoneController {
     this.service = new PhoneService();
   }
 
-  async create(req: Request, res: Response) {
+  async create(req: Request, res: Response, next: NextFunction) {
     try {
       const phone = await this.service.create(req.body);
       res.status(201).json(phone);
     } catch (error) {
-      if (error instanceof Error) {
-        if (error.message.includes('already exists')) {
-          return res.status(409).json({ message: error.message });
-        }
-        if (error.message.includes('Maximum number')) {
-          return res.status(409).json({ message: error.message });
-        }
-      }
-      throw error;
+      next(error); 
     }
   }
 
-  async findByDocument(req: Request, res: Response) {
-    const phones = await this.service.findByDocument(req.params.document);
-    res.json(phones);
+  async findByDocument(req: Request, res: Response, next: NextFunction) {
+    try {
+      const phones = await this.service.findByDocument(req.params.document);
+      res.json(phones);
+    } catch (error) {
+      next(error); 
+    }
   }
 
-  async getSummary(req: Request, res: Response) {
-    const summary = await this.service.getSummary(req.params.document);
-    res.json(summary);
+  async getSummary(req: Request, res: Response, next: NextFunction) {
+    try {
+      const summary = await this.service.getSummary(req.params.document);
+      res.json(summary);
+    } catch (error) {
+      next(error); 
+    }
   }
 }

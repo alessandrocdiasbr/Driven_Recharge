@@ -6,7 +6,12 @@ import { rechargeSchema } from '../schemas/recharge.schema';
 const router = Router();
 const controller = new RechargeController();
 
-router.post('/recharges', validateSchema(rechargeSchema), controller.create.bind(controller));
-router.get('/recharges/:number', controller.findByPhoneNumber.bind(controller));
+router.post('/recharges', validateSchema(rechargeSchema), (req, res, next) => {
+  controller.create(req, res).catch(next);
+});
+
+router.get('/recharges/:number', (req, res, next) => {
+  controller.findByPhoneNumber(req, res).catch(next);
+});
 
 export default router;
