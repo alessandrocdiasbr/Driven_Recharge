@@ -10,7 +10,6 @@ export class PhoneService {
   }
 
   async create(phone: CreatePhoneDTO): Promise<Phone> {
-    // Validate carrier_id exists
     const { rows } = await pool.query('SELECT 1 FROM carriers WHERE id = $1', [phone.carrier_id]);
     if (rows.length === 0) {
       throw new Error('Operadora não encontrada');
