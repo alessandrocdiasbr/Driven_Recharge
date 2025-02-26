@@ -20,4 +20,4 @@ Para executar o projeto, você precisará:
 - Compilar o projeto com npm run build
 - Iniciar o servidor com npm start
 
-https://driven-recharge-f8pg.onrender.com
+https://driven-recharge-kmn6.onrender.com
