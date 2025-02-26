@@ -1,5 +1,6 @@
 import { PhoneRepository } from '../repositories/phone.repository';
 import { CreatePhoneDTO, Phone, PhoneSummary } from '../protocols/phone.types';
+import { pool } from '../config/database';
 
 export class PhoneService {
   private repository: PhoneRepository;
@@ -9,6 +10,12 @@ export class PhoneService {
   }
 
   async create(phone: CreatePhoneDTO): Promise<Phone> {
+    // Validate carrier_id exists
+    const { rows } = await pool.query('SELECT 1 FROM carriers WHERE id = $1', [phone.carrier_id]);
+    if (rows.length === 0) {
+      throw new Error('Operadora não encontrada');
+    }
+
     const existingPhone = await this.repository.findByNumber(phone.number);
     if (existingPhone) {
       throw new Error('Phone number already exists');

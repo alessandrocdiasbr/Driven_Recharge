@@ -24,6 +24,9 @@ app.get('/health', (req: express.Request, res: express.Response) => {
 app.use('/api/phones', phoneRoutes);
 app.use('/api/recharges', rechargeRoutes);
 
+console.log("Rotas registradas:");
+
+
 app.use((error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   errorHandler(error, req, res, next);
 });

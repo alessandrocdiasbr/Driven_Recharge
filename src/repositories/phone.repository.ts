@@ -37,17 +37,35 @@ export class PhoneRepository {
   }
 
   async getSummary(document: string): Promise<PhoneSummary> {
-    const { rows } = await pool.query(`
+    interface QueryResult {
+      id: number;
+      number: string;
+      carrier: string;
+      recharges: any[] | null;
+    }
+
+    interface RechargeItem {
+      value: number;
+      created_at: Date;
+    }
+
+    const { rows } = await pool.query<QueryResult>(`
       SELECT 
         p.id,
         p.number,
         c.name as carrier,
-        json_agg(
-          json_build_object(
-            'value', r.value,
-            'created_at', r.created_at
+        CASE
+          WHEN COUNT(r.id) = 0 THEN '[]'::json
+          ELSE json_agg(
+            CASE
+              WHEN r.id IS NULL THEN NULL
+              ELSE json_build_object(
+                'value', r.value,
+                'created_at', r.created_at
+              )
+            END
           )
-        ) as recharges
+        END as recharges
       FROM phones p
       LEFT JOIN carriers c ON c.id = p.carrier_id
       LEFT JOIN recharges r ON r.phone_id = p.id
@@ -61,7 +79,10 @@ export class PhoneRepository {
         id: row.id,
         number: row.number,
         carrier: row.carrier,
-        recharges: row.recharges || []
+        
+        recharges: Array.isArray(row.recharges) 
+          ? row.recharges.filter((r: RechargeItem | null): r is RechargeItem => r !== null) 
+          : []
       }))
     };
   }

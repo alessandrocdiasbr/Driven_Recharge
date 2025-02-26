@@ -1,6 +1,7 @@
 import { RechargeRepository } from '../repositories/recharge.repository';
 import { PhoneRepository } from '../repositories/phone.repository';
 import { CreateRechargeDTO, Recharge } from '../protocols/recharge.types';
+import { pool } from '../config/database';
 
 export class RechargeService {
   private repository: RechargeRepository;
@@ -12,6 +13,11 @@ export class RechargeService {
   }
 
   async create(recharge: CreateRechargeDTO): Promise<Recharge> {
+    const { rows } = await pool.query('SELECT 1 FROM phones WHERE id = $1', [recharge.phone_id]);
+    if (rows.length === 0) {
+      throw new Error('Phone not found');
+    }
+
     return this.repository.create(recharge);
   }
 

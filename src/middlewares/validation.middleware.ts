@@ -6,7 +6,6 @@ export const validateSchema = (schema: Schema) => {
     const { error } = schema.validate(req.body, { abortEarly: false });
 
     if (error) {
-     
       next({
         name: 'ValidationError',
         message: 'Erro de validação',
